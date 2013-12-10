@@ -6,4 +6,6 @@ No liscence is given to use this code or any of its algorithms in any project wi
 
 We do not give any warranty or expression of fitness for any purpose.
 
+If you are reviewing the manuscript and are interested in the timing results, please be aware of the following. As the code here shows, simply moving the loops from R to C++ gives a several order of magnitude speedup. But even the C++ code here first calls into Igraph to extract the local neighborhood, then has to re-convert this subgraph to a C++ structure before calculating the ExF. 
 
+I get several more orders of magnitude of speed when I store the whole network in custom C++ code. Timing comparisons to the K-shell and eigenvalue centrality are based on such a graph. Forgive that I don't share that code here; mostly this is embarassment on my part as it is still in a very active development stage and there is a high risk of zombies.
