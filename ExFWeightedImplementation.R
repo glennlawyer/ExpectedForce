@@ -19,7 +19,7 @@
 
 
 ExFW <- function(qnode,graph){
-  if(! "weight" %in% list.edge.attributes(gr)){
+  if(! "weight" %in% list.edge.attributes(graph)){
     stop("Error: graph edges must have a weight attribute.") }
   .FI <- function(graph,clust){
     fi <- sum(E(graph)[adj(clust)]$weight) -
@@ -50,7 +50,6 @@ ExFW <- function(qnode,graph){
     return(0)
   }
 
-
   ## pre-allocate the vector of FI values
   guestimated.numFI <- 2*sum(n.d.one*length(d.two.nodes))
   allFI <- numeric(guestimated.numFI+5)
@@ -62,7 +61,7 @@ ExFW <- function(qnode,graph){
   for(i in 1:n.d.one){
     ## we will need the following edge weight (sums) to scale the FI:
     w.q.i <- E(graph, c(qnode,d.one.nodes[i]))$weight
-    w.d.i <- sum(E(gr)[adj(d.one.nodes[i])]$weight)
+    w.d.i <- sum(E(graph)[adj(d.one.nodes[i])]$weight)
     ##cat(" *w.q.i:",w.q.i,"\n")
     ##cat("  w.d.i:",w.d.i,"\n")
     if(i<n.d.one){   ## all remaining d.one.nodes
@@ -79,7 +78,7 @@ ExFW <- function(qnode,graph){
         ## store once for each way it can form, scaling by the probability
         ## of this path; we need the following edge weight (sums)
         w.q.j <- E(graph, c(qnode,d.one.nodes[j]))$weight
-        w.d.j <- sum(E(gr)[adj(d.one.nodes[j])]$weight)
+        w.d.j <- sum(E(graph)[adj(d.one.nodes[j])]$weight)
         ##cat("    w.q.j:",w.q.j,"\n")
         ##cat("    w.d.j:",w.d.j,"\n")
         ## way 1: qnode -- i, qnode -- j
