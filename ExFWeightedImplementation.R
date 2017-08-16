@@ -47,7 +47,7 @@ ExFW <- function(qnode,graph){
   }
   if(length(d.two.nodes)==0){
     ## cat("no nodes at distance two\n")
-    return(0)
+    return(-1)
   }
 
   ## pre-allocate the vector of FI values
