@@ -63,14 +63,14 @@ typedef std::map<int,int>::iterator smii;
 int set_egostarts(svi & egostart, svi & egoend,
 		  const svi & egos,  const svi & alters){
   egostart.clear(); egoend.clear();
-  int i,nnum=0,cnt=0;
+  int nnum=0,cnt=0;
   egostart.push_back(cnt);
   while(nnum<egos[0]){ // no edge
     egostart.push_back(cnt);
     egoend.push_back(cnt);
     nnum++;
   } 
-  for(i=1;i<egos.size();i++){
+  for(unsigned int i=1;i<egos.size();i++){
     cnt++;
     if(egos[i] != egos[i-1]){
       //std::cout<<egos[i]<<"  ";
@@ -184,7 +184,7 @@ double cluster_degree(svi & clusterNodes,
 */
 
 // [[Rcpp::export]]
-double exfcpp(svi _egos, svi _alters, int seed){
+double exfcpp(svi egosVect, svi altersVect, int seed){
   // SAFETY: check if the seed is in the edgelist!
   // SAFETY: check that the edge list is complete and sorted
   /////////////////////////////////////////////////////////////
@@ -192,10 +192,10 @@ double exfcpp(svi _egos, svi _alters, int seed){
   svi egostart,egoend; // indexes into egos, alters
   svi dOne, dTwo; // nodes at distance 1 (resp 2) from seed
   int all_ok;
-  all_ok = set_egostarts(egostart, egoend, _egos, _alters);
+  all_ok = set_egostarts(egostart, egoend, egosVect, altersVect);
   //std::cout<<"egostarts ok "<<all_ok<<std::endl;
   if(all_ok != 0){ return -1;}
-  all_ok=get_neighbors(dOne, dTwo, seed, egostart, egoend, _alters);
+  all_ok=get_neighbors(dOne, dTwo, seed, egostart, egoend, altersVect);
   //std::cout<<"get neighbors "<<all_ok<<std::endl;
   if(all_ok != 0){ return -2;}
   /////////////////////////////////////////////////////////////
@@ -204,7 +204,7 @@ double exfcpp(svi _egos, svi _alters, int seed){
   svi tmp(3); // stores the nodes in the cluster
   tmp[0]=seed;
   svii i,j; // iterators over the neighbors of the seed
-  double clustFI, totalFI; // cluster FI and total FI
+  double clustFI=0.0, totalFI=0.0; // cluster FI and total FI
   std::vector<double>  FIvalues; // the vector of FI values
   FIvalues.reserve(1000); // faster to use a constant that to guestimate
   ///////////////////////////////////////////////////////////////
@@ -216,22 +216,22 @@ double exfcpp(svi _egos, svi _alters, int seed){
     tmp[1]=*i;
     for(j=i+1;j!=dOne.end();j++){ // the remaining dOne nodes
       tmp[2]=*j;
-      clustFI=cluster_degree(tmp,egostart,egoend,_alters);
+      clustFI=cluster_degree(tmp,egostart,egoend,altersVect);
       // add it once for each way the cluster could form
       FIvalues.push_back(clustFI); totalFI+=clustFI;
       FIvalues.push_back(clustFI); totalFI+=clustFI;
       for(int edgeindx=egostart[*i];edgeindx<egoend[*i];edgeindx++){ 
-	if(_alters[edgeindx]==*j){
+	if(altersVect[edgeindx]==*j){
 	  FIvalues.push_back(clustFI); totalFI+=clustFI;
 	  FIvalues.push_back(clustFI); totalFI+=clustFI;
 	}}
     }
     // now search for all neighbors of i at distance two
     for(int neigh=egostart[*i];neigh<egoend[*i];neigh++){ 
-      j=find(dTwo.begin(),dTwo.end(),_alters[neigh]);
+      j=find(dTwo.begin(),dTwo.end(),altersVect[neigh]);
       if(j != dTwo.end()){
 	tmp[2]=*j;
-	clustFI=cluster_degree(tmp,egostart,egoend,_alters);
+	clustFI=cluster_degree(tmp,egostart,egoend,altersVect);
 	FIvalues.push_back(clustFI); totalFI+=clustFI;	
       }}
   } // end iteration over all clusters
