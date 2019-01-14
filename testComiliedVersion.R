@@ -29,13 +29,14 @@ testplot <- function(qnode, graphObj, lout=NULL){
 ## Make a sample graph
 gr <- ba.game(m=2,n=100,directed=FALSE)
 lout <- layout.fruchterman.reingold(gr)
-
+V(gr)$indx <- 1:vcount(gr)
 ## Generate a test plot, saving the graph layout:
 lout <- testplot(sample(1:vcount(gr),1), gr)
 
 ## get the ExF of a set of nodes:
 ##    (uncomment only one of these definitions of testNodes)
 testNodes <- 1:vcount(gr) 												 ## all nodes
+testNodes <- V(gr) 											           ## all nodes as Igraph vertex sequence
 testNodes <- which(degree(gr)<max(degree(gr)*0.6)) ## all except hubs. 
 testNodes <- which(degree(gr)==5)                  ## all with a certain degree
 
